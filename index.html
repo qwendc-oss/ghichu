@@ -19,100 +19,19 @@
 --text-main: #1c1c1e;
 --text-placeholder: #b3bcc7;
 }
-* {
-box-sizing: border-box;
--webkit-tap-highlight-color: transparent;
-margin: 0;
-padding: 0;
-}
-body {
-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-background-color: var(--app-bg);
-padding: 16px;
-display: flex;
-justify-content: center;
-}
-.app-container {
-width: 100%;
-max-width: 440px;
-display: flex;
-flex-direction: column;
-gap: 20px;
-}
-.input-group {
-display: flex;
-flex-direction: column;
-gap: 12px;
-margin-top: 10px;
-}
-input[type="text"] {
-width: 100%;
-background-color: var(--input-bg);
-border: none;
-border-radius: 12px;
-padding: 18px 20px;
-font-size: 18px;
-font-weight: bold;
-color: var(--text-main);
-}
-input[type="text"]::placeholder {
-color: var(--text-placeholder);
-}
-.screen-section {
-display: none;
-flex-direction: column;
-gap: 12px;
-}
-.active-screen {
-display: flex;
-}
-.grid-layout {
-display: grid;
-grid-template-columns: repeat(2, 1fr);
-gap: 12px;
-}
-.btn-custom {
-background-color: var(--btn-blue);
-color: white;
-border: none;
-border-radius: 12px;
-padding: 22px 10px;
-font-size: 18px;
-font-weight: bold;
-cursor: pointer;
-text-align: center;
-line-height: 1.3;
-box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-}
-.btn-custom:active {
-transform: scale(0.96);
-background-color: var(--btn-hover);
-}
-.btn-back {
-background-color: #e5e5ea;
-color: #3a3a3c;
-padding: 14px;
-font-size: 15px;
-font-weight: bold;
-border-radius: 10px;
-border: none;
-cursor: pointer;
-width: 100%;
-text-align: center;
-}
-.btn-save {
-width: 100%;
-background-color: var(--btn-blue);
-color: white;
-border: none;
-border-radius: 12px;
-padding: 22px;
-font-size: 20px;
-font-weight: bold;
-cursor: pointer;
-box-shadow: 0 6px 14px rgba(108, 127, 255, 0.25);
-margin-top: 10px;
-}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--app-bg); padding: 16px; display: flex; justify-content: center; }
+.app-container { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 20px; }
+.input-group { display: flex; flex-direction: column; gap: 12px; margin-top: 10px; }
+input[type="text"] { width: 100%; background-color: var(--input-bg); border: none; border-radius: 12px; padding: 18px 20px; font-size: 18px; font-weight: bold; color: var(--text-main); }
+input[type="text"]::placeholder { color: var(--text-placeholder); }
+.screen-section { display: none; flex-direction: column; gap: 12px; }
+.active-screen { display: flex; }
+.grid-layout { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+.btn-custom { background-color: var(--btn-blue); color: white; border: none; border-radius: 12px; padding: 22px 10px; font-size: 18px; font-weight: bold; cursor: pointer; text-align: center; line-height: 1.3; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+.btn-custom:active { transform: scale(0.96); background-color: var(--btn-hover); }
+.btn-back { background-color: #e5e5ea; color: #3a3a3c; padding: 14px; font-size: 15px; font-weight: bold; border-radius: 10px; border: none; cursor: pointer; width: 100%; text-align: center; }
+.btn-save { width: 100%; background-color: var(--btn-blue); color: white; border: none; border-radius: 12px; padding: 22px; font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 6px 14px rgba(108, 127, 255, 0.25); margin-top: 10px; }
 </style>
 </head>
 <body>
@@ -148,7 +67,6 @@ margin-top: 10px;
 
 <script>
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx4jQU79j-YF4JZIcjsHtGcqzcFm6skfiuspCrhS6RoYYUEAW32ZDDrHjLeTfQ6V5mD/exec";
-
 const subDataMap = {
 catcat: ["đưa đón catcat", "đưa catcat 1 chiều", "đón catcat 1 chiều"],
 moana: ["đưa đón moana", "đưa moana 1 chiều", "đón moana 1 chiều"],
@@ -163,121 +81,35 @@ taphin: ["đưa đón tả phìn", "đưa tả phìn 1 chiều", "đón tả ph�
 };
 
 document.addEventListener("DOMContentLoaded", function() {
-const mainScreen = document.getElementById('mainScreen');
-const subScreen = document.getElementById('subScreen');
-const subGrid = document.getElementById('subGrid');
-const hdvInput = document.getElementById('hdvInput');
-const chuyenDiInput = document.getElementById('chuyenDiInput');
-const backBtn = document.getElementById('backBtn');
-const saveBtn = document.getElementById('saveBtn');
+const mainScreen = document.getElementById('mainScreen'), subScreen = document.getElementById('subScreen'), subGrid = document.getElementById('subGrid'), hdvInput = document.getElementById('hdvInput'), chuyenDiInput = document.getElementById('chuyenDiInput'), backBtn = document.getElementById('backBtn'), saveBtn = document.getElementById('saveBtn');
 
-const mainButtons = document.querySelectorAll('.btn-main-trigger');
-mainButtons.forEach(function(btnChinh) {
+document.querySelectorAll('.btn-main-trigger').forEach(function(btnChinh) {
 btnChinh.onclick = function() {
-const key = btnChinh.getAttribute('data-key');
-const listSub = subDataMap[key];
-
+const key = btnChinh.getAttribute('data-key'), listSub = subDataMap[key];
 subGrid.innerHTML = "";
-
-if (listSub && listSub.length > 0) {
+if (listSub) {
 listSub.forEach(function(text) {
 const btnPhu = document.createElement('button');
-btnPhu.className = 'btn-custom';
-btnPhu.innerText = text;
-
-btnPhu.onclick = function() {
-chuyenDiInput.value = text;
-subScreen.classList.remove('active-screen');
-mainScreen.classList.add('active-screen');
-};
-
+btnPhu.className = 'btn-custom'; btnPhu.innerText = text;
+btnPhu.onclick = function() { chuyenDiInput.value = text; subScreen.classList.remove('active-screen'); mainScreen.classList.add('active-screen'); };
 subGrid.appendChild(btnPhu);
 });
-
-mainScreen.classList.remove('active-screen');
-subScreen.classList.add('active-screen');
+mainScreen.classList.remove('active-screen'); subScreen.classList.add('active-screen');
 }
 };
 });
 
-backBtn.onclick = function() {
-subScreen.classList.remove('active-screen');
-mainScreen.classList.add('active-screen');
-};
+backBtn.onclick = function() { subScreen.classList.remove('active-screen'); mainScreen.classList.add('active-screen'); };
 
 saveBtn.onclick = function() {
-const hdvValue = hdvInput.value.trim();
-const chuyenDiValue = chuyenDiInput.value.trim();
-
-if (hdvValue === "" && chuyenDiValue === "") {
-alert("Vui lòng nhập tên HDV hoặc chọn Chuyến đi trước khi lưu!");
-return;
-}
-
-fetch(WEB_APP_URL, {
-method: "POST",
-mode: "no-cors",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify({ hdv: hdvValue, chuyen_di: chuyenDiValue })
-}).catch(function(e) { console.log("Lỗi gửi ngầm:", e); });
-
-hdvInput.value = "";
-chuyenDiInput.value = "";
-
-saveBtn.innerText = "LƯU DỮ LIỆU THÀNH CÔNG!";
-saveBtn.style.backgroundColor = "#34c759";
-saveBtn.disabled = true;
-
-setTimeout(function() {
-saveBtn.innerText = "LƯU DỮ LIỆU";
-saveBtn.style.backgroundColor = "#6c7fff";
-saveBtn.disabled = false;
-}, 800);
+const hdvValue = hdvInput.value.trim(), chuyenDiValue = chuyenDiInput.value.trim();
+if (hdvValue === "" && chuyenDiValue === "") { alert("Vui lòng nhập liệu!"); return; }
+fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ hdv: hdvValue, chuyen_di: chuyenDiValue }) }).catch(function(e) { console.log(e); });
+hdvInput.value = ""; chuyenDiInput.value = "";
+saveBtn.innerText = "LƯU THÀNH CÔNG!"; saveBtn.style.backgroundColor = "#34c759"; saveBtn.disabled = true;
+setTimeout(function() { saveBtn.innerText = "LƯU DỮ LIỆU"; saveBtn.style.backgroundColor = "#6c7fff"; saveBtn.disabled = false; }, 800);
 };
 });
 </script>
 </body>
 </html>
-</script>
-</body>
-</html>
-const chuyenDiValue = chuyenDiInput.value.trim();
-
-if (hdvValue === "" && chuyenDiValue === "") {
-alert("Vui lòng nhập tên HDV hoặc chọn Chuyến đi trước khi lưu!");
-return;
-}
-
-saveBtn.innerText = "ĐANG LƯU DỮ LIỆU...";
-saveBtn.style.backgroundColor = "#ff9500";
-saveBtn.disabled = true;
-
-fetch(WEB_APP_URL, {
-method: "POST",
-mode: "no-cors",
-headers: { "Content-Type": "application/json" },
-body: JSON.stringify({ hdv: hdvValue, chuyen_di: chuyenDiValue })
-})
-.then(function() {
-hdvInput.value = "";
-chuyenDiInput.value = "";
-saveBtn.innerText = "LƯU DỮ LIỆU THÀNH CÔNG!";
-saveBtn.style.backgroundColor = "#34c759";
-setTimeout(function() {
-saveBtn.innerText = "LƯU DỮ LIỆU";
-saveBtn.style.backgroundColor = "#6c7fff";
-saveBtn.disabled = false;
-}, 1500);
-})
-.catch(function(error) {
-alert("Lỗi mạng: " + error);
-saveBtn.innerText = "THỬ LẠI";
-saveBtn.style.backgroundColor = "#ff3b30";
-saveBtn.disabled = false;
-});
-};
-});
-</script>
-</body>
-</html>
-
