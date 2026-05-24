@@ -159,11 +159,8 @@ margin-top: 10px;
 </div>
 
 <script>
-// ==============================================================================
-// KHU VỰC CẤU HÌNH LINK GOOGLE: ĐÃ ĐƯỢC ĐÓNG GÓI AN TOÀN, KHÔNG SỢ LỖI DÁN KÝ TỰ
-// ==============================================================================
-const WEB_APP_URL = String("https://script.google.com/macros/s/AKfycbx4jQU79j-YF4JZIcjsHtGcqzcFm6skfiuspCrhS6RoYYUEAW32ZDDrHjLeTfQ6V5mD/exec").trim();
-// ==============================================================================
+// Link Web App của bạn
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx4jQU79j-YF4JZIcjsHtGcqzcFm6skfiuspCrhS6RoYYUEAW32ZDDrHjLeTfQ6V5mD/exec";
 
 const subDataMap = {
 catcat: ["đưa đón catcat", "đưa catcat 1 chiều", "đón catcat 1 chiều"],
@@ -179,6 +176,7 @@ taphin: ["đưa đón tả phìn", "đưa tả phìn 1 chiều", "đón tả ph�
 };
 
 document.addEventListener("DOMContentLoaded", function() {
+// Tách biệt khai báo biến chuẩn iPhone Safari
 const mainScreen = document.getElementById('mainScreen');
 const subScreen = document.getElementById('subScreen');
 const subGrid = document.getElementById('subGrid');
@@ -187,6 +185,7 @@ const chuyenDiInput = document.getElementById('chuyenDiInput');
 const backBtn = document.getElementById('backBtn');
 const saveBtn = document.getElementById('saveBtn');
 
+// Xử lý sự kiện bấm nút Biến Chính độc lập
 const mainButtons = document.querySelectorAll('.btn-main-trigger');
 mainButtons.forEach(function(button) {
 button.addEventListener('click', function() {
@@ -216,11 +215,13 @@ subScreen.classList.add('active-screen');
 });
 });
 
+// Xử lý nút quay lại độc lập
 backBtn.addEventListener('click', function() {
 subScreen.classList.remove('active-screen');
 mainScreen.classList.add('active-screen');
 });
 
+// Xử lý nút Lưu dữ liệu độc lập
 saveBtn.addEventListener('click', function() {
 const hdvValue = hdvInput.value.trim();
 const chuyenDiValue = chuyenDiInput.value.trim();
@@ -250,6 +251,7 @@ body: JSON.stringify(dataToSend)
 .then(function() {
 hdvInput.value = "";
 chuyenDiInput.value = "";
+
 saveBtn.innerText = "LƯU DỮ LIỆU THÀNH CÔNG!";
 saveBtn.style.backgroundColor = "#34c759";
 
