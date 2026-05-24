@@ -13,14 +13,12 @@
 --text-main: #1c1c1e;
 --text-placeholder: #b3bcc7;
 }
-
 * {
 box-sizing: border-box;
 -webkit-tap-highlight-color: transparent;
 margin: 0;
 padding: 0;
 }
-
 body {
 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 background-color: var(--app-bg);
@@ -28,7 +26,6 @@ padding: 16px;
 display: flex;
 justify-content: center;
 }
-
 .app-container {
 width: 100%;
 max-width: 440px;
@@ -36,15 +33,12 @@ display: flex;
 flex-direction: column;
 gap: 20px;
 }
-
-/* --- INPUTS --- */
 .input-group {
 display: flex;
 flex-direction: column;
 gap: 12px;
 margin-top: 10px;
 }
-
 input[type="text"] {
 width: 100%;
 background-color: var(--input-bg);
@@ -55,29 +49,22 @@ font-size: 18px;
 font-weight: bold;
 color: var(--text-main);
 }
-
 input[type="text"]::placeholder {
 color: var(--text-placeholder);
 }
-
-/* --- SCREENS --- */
 .screen-section {
 display: none;
 flex-direction: column;
 gap: 12px;
 }
-
 .active-screen {
 display: flex;
 }
-
 .grid-layout {
 display: grid;
 grid-template-columns: repeat(2, 1fr);
 gap: 12px;
 }
-
-/* --- BUTTONS --- */
 .btn-custom {
 background-color: var(--btn-blue);
 color: white;
@@ -91,12 +78,10 @@ text-align: center;
 line-height: 1.3;
 box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
-
 .btn-custom:active {
 transform: scale(0.96);
 background-color: var(--btn-hover);
 }
-
 .btn-back {
 background-color: #e5e5ea;
 color: #3a3a3c;
@@ -109,7 +94,6 @@ cursor: pointer;
 width: 100%;
 text-align: center;
 }
-
 .btn-save {
 width: 100%;
 background-color: var(--btn-blue);
@@ -128,7 +112,6 @@ margin-top: 10px;
 <body>
 
 <div class="app-container">
-
 <div class="input-group">
 <input type="text" id="hdvInput" placeholder="HDV">
 <input type="text" id="chuyenDiInput" placeholder="Chuyến đi">
@@ -151,15 +134,13 @@ margin-top: 10px;
 
 <div id="subScreen" class="screen-section">
 <button id="backBtn" class="btn-back">← Quay lại chọn Biến Chính</button>
-<div id="subGrid" class="grid-layout">
-</div>
+<div id="subGrid" class="grid-layout"></div>
 </div>
 
 <button id="saveBtn" class="btn-save">LƯU DỮ LIỆU</button>
 </div>
 
 <script>
-// Link Web App của bạn
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx4jQU79j-YF4JZIcjsHtGcqzcFm6skfiuspCrhS6RoYYUEAW32ZDDrHjLeTfQ6V5mD/exec";
 
 const subDataMap = {
@@ -176,7 +157,6 @@ taphin: ["đưa đón tả phìn", "đưa tả phìn 1 chiều", "đón tả ph�
 };
 
 document.addEventListener("DOMContentLoaded", function() {
-// Tách biệt khai báo biến chuẩn iPhone Safari
 const mainScreen = document.getElementById('mainScreen');
 const subScreen = document.getElementById('subScreen');
 const subGrid = document.getElementById('subGrid');
@@ -185,44 +165,41 @@ const chuyenDiInput = document.getElementById('chuyenDiInput');
 const backBtn = document.getElementById('backBtn');
 const saveBtn = document.getElementById('saveBtn');
 
-// Xử lý sự kiện bấm nút Biến Chính độc lập
 const mainButtons = document.querySelectorAll('.btn-main-trigger');
-mainButtons.forEach(function(button) {
-button.addEventListener('click', function() {
-const key = button.getAttribute('data-key');
+mainButtons.forEach(function(btnChinh) {
+btnChinh.onclick = function() {
+const key = btnChinh.getAttribute('data-key');
 const listSub = subDataMap[key];
 
 subGrid.innerHTML = "";
 
 if (listSub && listSub.length > 0) {
 listSub.forEach(function(text) {
-const btn = document.createElement('button');
-btn.className = 'btn-custom';
-btn.innerText = text;
+const btnPhu = document.createElement('button');
+btnPhu.className = 'btn-custom';
+btnPhu.innerText = text;
 
-btn.addEventListener('click', function() {
+btnPhu.onclick = function() {
 chuyenDiInput.value = text;
 subScreen.classList.remove('active-screen');
 mainScreen.classList.add('active-screen');
-});
+};
 
-subGrid.appendChild(btn);
+subGrid.appendChild(btnPhu);
 });
 
 mainScreen.classList.remove('active-screen');
 subScreen.classList.add('active-screen');
 }
-});
+};
 });
 
-// Xử lý nút quay lại độc lập
-backBtn.addEventListener('click', function() {
+backBtn.onclick = function() {
 subScreen.classList.remove('active-screen');
 mainScreen.classList.add('active-screen');
-});
+};
 
-// Xử lý nút Lưu dữ liệu độc lập
-saveBtn.addEventListener('click', function() {
+saveBtn.onclick = function() {
 const hdvValue = hdvInput.value.trim();
 const chuyenDiValue = chuyenDiInput.value.trim();
 
@@ -235,26 +212,17 @@ saveBtn.innerText = "ĐANG LƯU DỮ LIỆU...";
 saveBtn.style.backgroundColor = "#ff9500";
 saveBtn.disabled = true;
 
-const dataToSend = {
-hdv: hdvValue,
-chuyen_di: chuyenDiValue
-};
-
 fetch(WEB_APP_URL, {
 method: "POST",
 mode: "no-cors",
-headers: {
-Content-Type: "application/json"
-},
-body: JSON.stringify(dataToSend)
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({ hdv: hdvValue, chuyen_di: chuyenDiValue })
 })
 .then(function() {
 hdvInput.value = "";
 chuyenDiInput.value = "";
-
 saveBtn.innerText = "LƯU DỮ LIỆU THÀNH CÔNG!";
 saveBtn.style.backgroundColor = "#34c759";
-
 setTimeout(function() {
 saveBtn.innerText = "LƯU DỮ LIỆU";
 saveBtn.style.backgroundColor = "#6c7fff";
@@ -262,14 +230,13 @@ saveBtn.disabled = false;
 }, 1500);
 })
 .catch(function(error) {
-alert("Lỗi kết nối mạng: " + error);
+alert("Lỗi mạng: " + error);
 saveBtn.innerText = "THỬ LẠI";
 saveBtn.style.backgroundColor = "#ff3b30";
 saveBtn.disabled = false;
 });
-});
+};
 });
 </script>
-
 </body>
 </html>
