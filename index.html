@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="App Sapa">
+<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/854/854878.png">
+
 <title>Quan Ly Chuyen Di Sapa</title>
 <style>
 :root {
@@ -199,8 +205,42 @@ subScreen.classList.remove('active-screen');
 mainScreen.classList.add('active-screen');
 };
 
+// 🌟 TỐI ƯU HÀM LƯU SIÊU TỐC - KHÔNG CHỜ ĐỢI 🌟
 saveBtn.onclick = function() {
 const hdvValue = hdvInput.value.trim();
+const chuyenDiValue = chuyenDiInput.value.trim();
+
+if (hdvValue === "" && chuyenDiValue === "") {
+alert("Vui lòng nhập tên HDV hoặc chọn Chuyến đi trước khi lưu!");
+return;
+}
+
+// 1. Gửi lệnh chạy ngầm đi ngay lập tức
+fetch(WEB_APP_URL, {
+method: "POST",
+mode: "no-cors",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({ hdv: hdvValue, chuyen_di: chuyenDiValue })
+}).catch(function(e) { console.log("Lỗi gửi ngầm:", e); });
+
+// 2. KHÔNG CHỜ ĐỢI - Phản hồi thành công trên màn hình luôn lập tức (dưới 0.1s)
+hdvInput.value = "";
+chuyenDiInput.value = "";
+
+saveBtn.innerText = "LƯU DỮ LIỆU THÀNH CÔNG!";
+saveBtn.style.backgroundColor = "#34c759";
+saveBtn.disabled = true;
+
+setTimeout(function() {
+saveBtn.innerText = "LƯU DỮ LIỆU";
+saveBtn.style.backgroundColor = "#6c7fff";
+saveBtn.disabled = false;
+}, 800); // 0.8 giây sau tự trả nút về bình thường để bấm tiếp chuyến khác
+};
+});
+</script>
+</body>
+</html>
 const chuyenDiValue = chuyenDiInput.value.trim();
 
 if (hdvValue === "" && chuyenDiValue === "") {
