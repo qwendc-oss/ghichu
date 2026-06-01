@@ -150,6 +150,7 @@ margin-top: 10px;
 <div class="input-group">
     <div class="hdv-row">
         <input type="text" id="hdvInput" placeholder="HDV / SĐT" readonly>
+        <!-- Nút dán siêu tốc đọc trực tiếp bộ nhớ tạm không chuyển trang -->
         <button type="button" id="pasteBtn" class="btn-action-small btn-paste-fast">📋 Dán</button>
         <button type="button" id="carTriggerBtn" class="btn-action-small btn-select-car">🚌 Xe</button>
     </div>
@@ -213,37 +214,35 @@ const subGrid = document.getElementById('subGrid');
 const carGrid = document.getElementById('carGrid');
 const hdvInput = document.getElementById('hdvInput');
 const chuyenDiInput = document.getElementById('chuyenDiInput');
-const backBtn = document.getElementById('backBtn');
-const backCarBtn = document.getElementById('backCarBtn');
 const carTriggerBtn = document.getElementById('carTriggerBtn');
 const pasteBtn = document.getElementById('pasteBtn');
 const saveBtn = document.getElementById('saveBtn');
+const backBtn = document.getElementById('backBtn');
+const backCarBtn = document.getElementById('backCarBtn');
 
 /* =========================================================
-   ⚡ TỰ ĐỘNG XỬ LÝ SĐT (XÓA KHOẢNG TRẮNG, GIỮ NGUYÊN TAB)
+   ⚡ ĐỌC TRỰC TIẾP CLIPBOARD: KHÔNG NHẢY APP, KHÔNG THÊM TAB
    ========================================================= */
-const urlParams = new URLSearchParams(window.location.search);
-const sdtParam = urlParams.get('sdt');
-if (sdtParam) {
-    // Giải mã ký tự đặc biệt thu về chuỗi gốc và xử lý khoảng trắng
-    let cleanSdt = decodeURIComponent(sdtParam).trim();
-    hdvInput.value = cleanSdt;
-    
-    // Xóa param trên url mà không làm mất trạng thái hay tải lại trang
-    window.history.replaceState({}, document.title, window.location.pathname);
-}
-
-/* =========================================================
-   ⚡ GỌI SỬ DỤNG PHÍM TẮT KHÔNG ĐỔI MÀN HÌNH SAFARI
-   ========================================================= */
-pasteBtn.onclick = function(e) {
+pasteBtn.onclick = async function(e) {
     e.preventDefault();
-    // Ép mở trực tiếp trên chính tab hiện hành thay vì mở cửa sổ mới
-    window.location.href = "shortcuts://run-shortcut?name=DanSapa";
+    try {
+        // Gọi API hệ thống để đọc văn bản từ bộ nhớ tạm
+        const text = await navigator.clipboard.readText();
+        if (text) {
+            // Tự động xóa bỏ toàn bộ khoảng trắng/dấu cách có trong SĐT
+            hdvInput.value = text.replace(/\s+/g, '').trim();
+        } else {
+            alert("Bộ nhớ tạm của bạn đang trống!");
+        }
+    } catch (err) {
+        // Trường hợp chưa được cấp quyền đọc bộ nhớ tạm trên iOS
+        alert("Vui lòng cho phép ứng dụng truy cập Bộ nhớ tạm khi được hỏi.");
+        console.error("Lỗi clipboard: ", err);
+    }
 };
 
 /* =========================================================
-   🚌 CHỌN XE ĐI CÙNG (GIỮ NGUYÊN)
+   🚌 CHỌN XE ĐI CÙNG
    ========================================================= */
 listXe.forEach(function(bienSo) {
     const btnXe = document.createElement('button');
@@ -270,7 +269,7 @@ backCarBtn.onclick = function() {
 };
 
 /* =========================================================
-   XỬ LÝ MÀN HÌNH CHUYẾN ĐI (GIỮ NGUYÊN)
+   XỬ LÝ MÀN HÌNH CHUYẾN ĐI
    ========================================================= */
 const mainButtons = document.querySelectorAll('.btn-main-trigger');
 mainButtons.forEach(function(btnChinh) {
@@ -307,7 +306,7 @@ mainScreen.classList.add('active-screen');
 };
 
 /* =========================================================
-   LƯU DỮ LIỆU SIÊU TỐC (GIỮ NGUYÊN)
+   LƯU DỮ LIỆU SIÊU TỐC
    ========================================================= */
 saveBtn.onclick = function() {
 const hdvValue = hdvInput.value.trim();
