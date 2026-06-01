@@ -149,8 +149,8 @@ margin-top: 10px;
 <div class="app-container">
 <div class="input-group">
     <div class="hdv-row">
-        <input type="text" id="hdvInput" placeholder="HDV / SĐT" readonly>
-        <!-- Nút dán siêu tốc đọc trực tiếp bộ nhớ tạm không chuyển trang -->
+        <!-- ĐÃ SỬA: Xóa bỏ thuộc tính readonly để bạn thoải mái gõ tay bằng bàn phím -->
+        <input type="text" id="hdvInput" placeholder="HDV / SĐT">
         <button type="button" id="pasteBtn" class="btn-action-small btn-paste-fast">📋 Dán</button>
         <button type="button" id="carTriggerBtn" class="btn-action-small btn-select-car">🚌 Xe</button>
     </div>
@@ -226,16 +226,14 @@ const backCarBtn = document.getElementById('backCarBtn');
 pasteBtn.onclick = async function(e) {
     e.preventDefault();
     try {
-        // Gọi API hệ thống để đọc văn bản từ bộ nhớ tạm
         const text = await navigator.clipboard.readText();
         if (text) {
-            // Tự động xóa bỏ toàn bộ khoảng trắng/dấu cách có trong SĐT
+            // Tự động xóa bỏ toàn bộ khoảng trắng/dấu cách có trong SĐT khi dán siêu tốc
             hdvInput.value = text.replace(/\s+/g, '').trim();
         } else {
             alert("Bộ nhớ tạm của bạn đang trống!");
         }
     } catch (err) {
-        // Trường hợp chưa được cấp quyền đọc bộ nhớ tạm trên iOS
         alert("Vui lòng cho phép ứng dụng truy cập Bộ nhớ tạm khi được hỏi.");
         console.error("Lỗi clipboard: ", err);
     }
