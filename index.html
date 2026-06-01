@@ -140,4 +140,200 @@ font-size: 20px;
 font-weight: bold;
 cursor: pointer;
 box-shadow: 0 6px 14px rgba(108, 127, 255, 0.25);
-margin-top: 1
+margin-top: 10px;
+}
+</style>
+</head>
+<body>
+
+<div class="app-container">
+<div class="input-group">
+    <div class="hdv-row">
+        <input type="text" id="hdvInput" placeholder="HDV / SĐT">
+        <button type="button" id="pasteBtn" class="btn-action-small btn-paste-fast">📋 Dán</button>
+        <button type="button" id="carTriggerBtn" class="btn-action-small btn-select-car">🚌 Xe</button>
+    </div>
+    <input type="text" id="chuyenDiInput" placeholder="Chuyến đi">
+</div>
+
+<div id="mainScreen" class="screen-section active-screen">
+<div class="grid-layout">
+<button class="btn-custom btn-main-trigger" data-key="catcat">Cát Cát</button>
+<button class="btn-custom btn-main-trigger" data-key="captreo">Cáp Treo</button>
+<button class="btn-custom btn-main-trigger" data-key="moana">Moana</button>
+<button class="btn-custom btn-main-trigger" data-key="banmong">Bản Mòng</button>
+<button class="btn-custom btn-main-trigger" data-key="caukinh">Cầu kính</button>
+<button class="btn-custom btn-main-trigger" data-key="trungchuyen">Trung chuyển</button>
+<button class="btn-custom btn-main-trigger" data-key="dian">Đi ăn</button>
+<button class="btn-custom btn-main-trigger" data-key="galaocai">Ga lào cai</button>
+<button class="btn-custom btn-main-trigger" data-key="tavan">Tả Van</button>
+<button class="btn-custom btn-main-trigger" data-key="taphin">Tả Phìn</button>
+</div>
+</div>
+
+<div id="subScreen" class="screen-section">
+<button id="backBtn" class="btn-back">← Quay lại chọn Biến Chính</button>
+<div id="subGrid" class="grid-layout"></div>
+</div>
+
+<div id="carScreen" class="screen-section">
+<button id="backCarBtn" class="btn-back">← Quay lại</button>
+<div id="carGrid" class="grid-layout"></div>
+</div>
+
+<button id="saveBtn" class="btn-save">LƯU DỮ LIỆU</button>
+</div>
+
+<script>
+// 🚀 ĐÃ CẬP NHẬT: Đường link Web App Google mới chính xác của bạn ở đây
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxwqcov_NzqRJJOPGP2is1hKKdBYv-PrdADABAjbxfK9ngxvJIyuTO80mWsra2_/exec";
+
+const subDataMap = {
+catcat: ["đưa đón catcat", "đưa catcat 1 chiều", "đón catcat 1 chiều"],
+moana: ["đưa đón moana", "đưa moana 1 chiều", "đón moana 1 chiều"],
+captreo: ["đưa đón cáp treo", "đưa cáp treo 1 chiều", "đón cáp treo 1 chiều"],
+caukinh: ["đưa đón cầu kính", "đưa cầu kính 1 chiều", "đón cầu kính 1 chiều"],
+banmong: ["đưa đón bản mòng", "đưa bản mòng 1 chiều", "đón bản mòng 1 chiều"],
+tavan: ["đưa đón tả van", "đưa tả van 1 chiều", "đón tả van 1 chiều"],
+galaocai: ["đón ga", "đón ga+cửa khẩu", "tiễn ga"],
+trungchuyen: ["bãi xe - khách sạn", "khách sạn - bãi xe", "bãi xe - nhà hàng", "nhà hàng - bãi xe", "bãi xe - sun", "sun - bãi xe"],
+dian: ["đưa đón đi ăn", "nhà hàng - khách sạn", "khách sạn - nhà hàng"],
+taphin: ["đưa đón tả phìn", "đưa tả phìn 1 chiều", "đón tả phìn 1 chiều"]
+};
+
+const listXe = ["3314", "120", "3325", "2525", "021", "801", "270", "4869", "284", "5349", "2610"];
+
+document.addEventListener("DOMContentLoaded", function() {
+const mainScreen = document.getElementById('mainScreen');
+const subScreen = document.getElementById('subScreen');
+const carScreen = document.getElementById('carScreen');
+const subGrid = document.getElementById('subGrid');
+const carGrid = document.getElementById('carGrid');
+const hdvInput = document.getElementById('hdvInput');
+const chuyenDiInput = document.getElementById('chuyenDiInput');
+const carTriggerBtn = document.getElementById('carTriggerBtn');
+const pasteBtn = document.getElementById('pasteBtn');
+const saveBtn = document.getElementById('saveBtn');
+const backBtn = document.getElementById('backBtn');
+const backCarBtn = document.getElementById('backCarBtn');
+
+/* =========================================================
+   ⚡ ĐỌC TRỰC TIẾP CLIPBOARD: KHÔNG DÙNG PHÍM TẮT, KHÔNG NHẢY TAB
+   ========================================================= */
+pasteBtn.onclick = async function(e) {
+    e.preventDefault();
+    try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+            // Tự động xóa khoảng trắng khi dán siêu tốc
+            hdvInput.value = text.replace(/\s+/g, '').trim();
+        } else {
+            alert("Bộ nhớ tạm của bạn đang trống!");
+        }
+    } catch (err) {
+        alert("Vui lòng cho phép ứng dụng truy cập Bộ nhớ tạm khi được hỏi.");
+        console.error("Lỗi clipboard: ", err);
+    }
+};
+
+/* =========================================================
+   🚌 CHỌN XE ĐI CÙNG (GIỮ NGUYÊN)
+   ========================================================= */
+listXe.forEach(function(bienSo) {
+    const btnXe = document.createElement('button');
+    btnXe.className = 'btn-custom';
+    btnXe.innerText = bienSo;
+    
+    btnXe.onclick = function() {
+        hdvInput.value = "đi cùng " + bienSo;
+        carScreen.classList.remove('active-screen');
+        mainScreen.classList.add('active-screen');
+    };
+    carGrid.appendChild(btnXe);
+});
+
+carTriggerBtn.onclick = function() {
+    mainScreen.classList.remove('active-screen');
+    subScreen.classList.remove('active-screen');
+    carScreen.classList.add('active-screen');
+};
+
+backCarBtn.onclick = function() {
+    carScreen.classList.remove('active-screen');
+    mainScreen.classList.add('active-screen');
+};
+
+/* =========================================================
+   XỬ LÝ MÀN HÌNH CHUYẾN ĐI (GIỮ NGUYÊN)
+   ========================================================= */
+const mainButtons = document.querySelectorAll('.btn-main-trigger');
+mainButtons.forEach(function(btnChinh) {
+btnChinh.onclick = function() {
+const key = btnChinh.getAttribute('data-key');
+const listSub = subDataMap[key];
+
+subGrid.innerHTML = "";
+
+if (listSub && listSub.length > 0) {
+listSub.forEach(function(text) {
+const btnPhu = document.createElement('button');
+btnPhu.className = 'btn-custom';
+btnPhu.innerText = text;
+
+btnPhu.onclick = function() {
+chuyenDiInput.value = text;
+subScreen.classList.remove('active-screen');
+mainScreen.classList.add('active-screen');
+};
+
+subGrid.appendChild(btnPhu);
+});
+
+mainScreen.classList.remove('active-screen');
+subScreen.classList.add('active-screen');
+}
+};
+});
+
+backBtn.onclick = function() {
+subScreen.classList.remove('active-screen');
+mainScreen.classList.add('active-screen');
+};
+
+/* =========================================================
+   LƯU DỮ LIỆU SIÊU TỐC
+   ========================================================= */
+saveBtn.onclick = function() {
+const hdvValue = hdvInput.value.trim();
+const chuyenDiValue = chuyenDiInput.value.trim();
+
+if (hdvValue === "" && chuyenDiValue === "") {
+alert("Vui lòng nhập tên HDV hoặc chọn Chuyến đi trước khi lưu!");
+return;
+}
+
+// Gửi ngầm dữ liệu lên Google Sheets
+fetch(WEB_APP_URL, {
+method: "POST",
+mode: "no-cors",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify({ hdv: hdvValue, chuyen_di: chuyenDiValue })
+}).catch(function(e) { console.log("Lỗi gửi ngầm:", e); });
+
+hdvInput.value = "";
+chuyenDiInput.value = "";
+
+saveBtn.innerText = "LƯU DỮ LIỆU THÀNH CÔNG!";
+saveBtn.style.backgroundColor = "#34c759";
+saveBtn.disabled = true;
+
+setTimeout(function() {
+saveBtn.innerText = "LƯU DỮ LIỆU";
+saveBtn.style.backgroundColor = "#6c7fff";
+saveBtn.disabled = false;
+}, 800);
+};
+});
+</script>
+</body>
+</html>
