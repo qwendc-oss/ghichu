@@ -19,7 +19,7 @@
 --text-main: #1c1c1e;
 --text-placeholder: #b3bcc7;
 --btn-orange: #ff9500;
---btn-green: #34c759; /* Màu xanh lá nổi bật cho nút dán nhanh */
+--btn-green: #34c759;
 }
 * {
 box-sizing: border-box;
@@ -47,7 +47,6 @@ flex-direction: column;
 gap: 12px;
 margin-top: 10px;
 }
-/* Thiết kế hàng ngang chứa ô HDV và 2 nút chức năng */
 .hdv-row {
 display: flex;
 gap: 8px;
@@ -67,7 +66,6 @@ color: var(--text-main);
 input[type="text"]::placeholder {
 color: var(--text-placeholder);
 }
-/* Style nút chức năng nhỏ gọn bên cạnh ô HDV */
 .btn-action-small {
 color: white;
 border: none;
@@ -151,17 +149,15 @@ margin-top: 10px;
 <div class="app-container">
 <div class="input-group">
     <div class="hdv-row">
-        <!-- Ô nhập text tự do -->
-        <input type="text" id="hdvInput" placeholder="HDV / SĐT">
-        <!-- Nút Dán: Hành động chạm trực tiếp của người dùng giúp mở bảng xin quyền iOS -->
+        <input type="text" id="hdvInput" placeholder="HDV / SĐT" readonly>
+        <!-- Nút dán gọi Phím Tắt Hệ Thống -->
         <button type="button" id="pasteBtn" class="btn-action-small btn-paste-fast">📋 Dán</button>
-        <!-- Nút mở màn hình chọn Xe -->
         <button type="button" id="carTriggerBtn" class="btn-action-small btn-select-car">🚌 Xe</button>
     </div>
     <input type="text" id="chuyenDiInput" placeholder="Chuyến đi">
 </div>
 
-<!-- MÀN HÌNH CHÍNH: CHỌN BIẾN CHÍNH -->
+<!-- MÀN HÌNH CHÍNH -->
 <div id="mainScreen" class="screen-section active-screen">
 <div class="grid-layout">
 <button class="btn-custom btn-main-trigger" data-key="catcat">Cát Cát</button>
@@ -177,13 +173,13 @@ margin-top: 10px;
 </div>
 </div>
 
-<!-- MÀN HÌNH PHỤ 1: CHỌN CHI TIẾT CHUYẾN ĐI -->
+<!-- MÀN HÌNH CHUYẾN ĐI -->
 <div id="subScreen" class="screen-section">
 <button id="backBtn" class="btn-back">← Quay lại chọn Biến Chính</button>
 <div id="subGrid" class="grid-layout"></div>
 </div>
 
-<!-- MÀN HÌNH PHỤ 2: CHỌN XE ĐI CÙNG -->
+<!-- MÀN HÌNH CHỌN XE -->
 <div id="carScreen" class="screen-section">
 <button id="backCarBtn" class="btn-back">← Quay lại</button>
 <div id="carGrid" class="grid-layout"></div>
@@ -208,7 +204,6 @@ dian: ["đưa đón đi ăn", "nhà hàng - khách sạn", "khách sạn - nhà 
 taphin: ["đưa đón tả phìn", "đưa tả phìn 1 chiều", "đón tả phìn 1 chiều"]
 };
 
-// Danh sách xe công ty yêu cầu
 const listXe = ["3314", "120", "3325", "2525", "021", "801", "270", "4869", "284", "5349", "2610"];
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -226,28 +221,26 @@ const pasteBtn = document.getElementById('pasteBtn');
 const saveBtn = document.getElementById('saveBtn');
 
 /* =========================================================
-   ⚡ TÍNH NĂNG 1: BẤM NÚT "📋 DÁN" ĐỂ LẤY NGAY SĐT (1 CHẠM CHUẨN IOS)
+   ⚡ TỰ ĐỘNG BÓC TÁCH DỮ LIỆU TỪ LINK DO PHÍM TẮT TRUYỀN SANG
    ========================================================= */
-pasteBtn.onclick = async function() {
-    try {
-        // Gọi lệnh đọc clipboard trực tiếp trong sự kiện click của thẻ button
-        const text = await navigator.clipboard.readText();
-        const cleanText = text.trim();
-        
-        if (cleanText.length > 0) {
-            hdvInput.value = cleanText;
-        } else {
-            alert("Bộ nhớ tạm hiện đang trống. Bạn hãy copy SĐT trước khi bấm nút dán nhé!");
-        }
-    } catch (err) {
-        // Trường hợp trình duyệt cũ không hỗ trợ Clipboard API hoặc lỗi không xác định
-        alert("Không thể đọc bộ nhớ tạm. Hãy chắc chắn bạn đã COPY số điện thoại ngoài cuộc gọi/SMS và cho phép quyền khi iPhone hỏi nhé!");
-        console.log("Lỗi hệ thống đọc Clipboard:", err);
-    }
+const urlParams = new URLSearchParams(window.location.search);
+const sdtParam = urlParams.get('sdt');
+if (sdtParam) {
+    hdvInput.value = sdtParam.trim();
+    // Xóa tham số trên thanh địa chỉ cho sạch app
+    window.history.replaceState({}, document.title, window.location.pathname);
+}
+
+/* =========================================================
+   ⚡ 1 CHẠM DUY NHẤT: GỌI PHÍM TẮT ĐỂ TỰ ĐỘNG HÚT SĐT VÀO APP
+   ========================================================= */
+pasteBtn.onclick = function() {
+    // Ép iPhone mở phím tắt DanSapa đã cài ở bước 1
+    window.location.href = "shortcuts://run-shortcut?name=DanSapa";
 };
 
 /* =========================================================
-   🚌 TÍNH NĂNG 2: MÀN HÌNH CHỌN XE ĐI CÙNG (GHI ĐÈ CHỮ "đi cùng xe")
+   🚌 CHỌN XE ĐI CÙNG (GIỮ NGUYÊN)
    ========================================================= */
 listXe.forEach(function(bienSo) {
     const btnXe = document.createElement('button');
@@ -255,31 +248,26 @@ listXe.forEach(function(bienSo) {
     btnXe.innerText = bienSo;
     
     btnXe.onclick = function() {
-        // Ghi đè hoàn toàn ô HDV thành chữ "đi cùng [số xe]", không giữ lại SĐT cũ
         hdvInput.value = "đi cùng " + bienSo;
-        
-        // Quay về màn hình chính sau khi chọn xong xe
         carScreen.classList.remove('active-screen');
         mainScreen.classList.add('active-screen');
     };
     carGrid.appendChild(btnXe);
 });
 
-// Chuyển sang màn hình chọn xe khi bấm nút Xe màu cam
 carTriggerBtn.onclick = function() {
     mainScreen.classList.remove('active-screen');
     subScreen.classList.remove('active-screen');
     carScreen.classList.add('active-screen');
 };
 
-// Nút quay lại từ màn hình xe
 backCarBtn.onclick = function() {
     carScreen.classList.remove('active-screen');
     mainScreen.classList.add('active-screen');
 };
 
 /* =========================================================
-   XỬ LÝ MÀN HÌNH CHUYẾN ĐI (CODE GỐC GIỮ NGUYÊN)
+   XỬ LÝ MÀN HÌNH CHUYẾN ĐI (GIỮ NGUYÊN)
    ========================================================= */
 const mainButtons = document.querySelectorAll('.btn-main-trigger');
 mainButtons.forEach(function(btnChinh) {
@@ -316,7 +304,7 @@ mainScreen.classList.add('active-screen');
 };
 
 /* =========================================================
-   LƯU DỮ LIỆU SIÊU TỐC (CODE GỐC GIỮ NGUYÊN)
+   LƯU DỮ LIỆU SIÊU TỐC (GIỮ NGUYÊN)
    ========================================================= */
 saveBtn.onclick = function() {
 const hdvValue = hdvInput.value.trim();
