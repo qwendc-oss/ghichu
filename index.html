@@ -19,6 +19,7 @@
 --text-main: #1c1c1e;
 --text-placeholder: #b3bcc7;
 --btn-orange: #ff9500;
+--btn-green: #34c759; /* Màu xanh lá cho nút dán */
 }
 * {
 box-sizing: border-box;
@@ -46,17 +47,19 @@ flex-direction: column;
 gap: 12px;
 margin-top: 10px;
 }
+/* Thiết kế lại hàng HDV để chứa 3 phần: Ô nhập, Nút dán, Nút xe */
 .hdv-row {
 display: flex;
-gap: 10px;
+gap: 8px;
 width: 100%;
 }
 input[type="text"] {
-width: 100%;
+flex: 1; /* Chiếm phần lớn không gian */
+min-width: 0;
 background-color: var(--input-bg);
 border: none;
 border-radius: 12px;
-padding: 18px 20px;
+padding: 18px 15px;
 font-size: 18px;
 font-weight: bold;
 color: var(--text-main);
@@ -64,16 +67,23 @@ color: var(--text-main);
 input[type="text"]::placeholder {
 color: var(--text-placeholder);
 }
-.btn-select-car {
-background-color: var(--btn-orange);
+/* Style chung cho các nút chức năng nhỏ cạnh ô nhập */
+.btn-action-small {
 color: white;
 border: none;
 border-radius: 12px;
-padding: 0 15px;
-font-size: 16px;
+padding: 0 12px;
+font-size: 15px;
 font-weight: bold;
 cursor: pointer;
 white-space: nowrap;
+box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+.btn-paste-fast {
+background-color: var(--btn-green);
+}
+.btn-select-car {
+background-color: var(--btn-orange);
 }
 .screen-section {
 display: none;
@@ -138,8 +148,9 @@ margin-top: 10px;
 <div class="app-container">
 <div class="input-group">
     <div class="hdv-row">
-        <input type="text" id="hdvInput" placeholder="HDV (Chạm để dán số)">
-        <button type="button" id="carTriggerBtn" class="btn-select-car">🚌 Xe</button>
+        <input type="text" id="hdvInput" placeholder="HDV / SĐT">
+        <button type="button" id="pasteBtn" class="btn-action-small btn-paste-fast">📋 Dán</button>
+        <button type="button" id="carTriggerBtn" class="btn-action-small btn-select-car">🚌 Xe</button>
     </div>
     <input type="text" id="chuyenDiInput" placeholder="Chuyến đi">
 </div>
@@ -201,25 +212,26 @@ const chuyenDiInput = document.getElementById('chuyenDiInput');
 const backBtn = document.getElementById('backBtn');
 const backCarBtn = document.getElementById('backCarBtn');
 const carTriggerBtn = document.getElementById('carTriggerBtn');
+const pasteBtn = document.getElementById('pasteBtn');
 const saveBtn = document.getElementById('saveBtn');
 
 /* =========================================================
-   ⚡ TÍNH NĂNG 1: DÁN SĐT SIÊU TỐC KHI CHẠM VÀO Ô TEXT
+   ⚡ TÍNH NĂNG 1: BẤM NÚT "📋 DÁN" -> DÁN NGAY LẬP TỨC (1 CHẠM)
    ========================================================= */
-hdvInput.addEventListener('focus', async function() {
+pasteBtn.onclick = async function() {
     try {
+        // Đọc văn bản từ bộ nhớ tạm khi người dùng bấm nút chủ động
         const text = await navigator.clipboard.readText();
         const cleanText = text.trim();
         
-        if (cleanText.length > 0 && !isNaN(cleanText.replace(/\s/g, ''))) {
-            // Chỉ ghi nhận SĐT nguyên bản, không nối thêm gì cả
+        if (cleanText.length > 0) {
             hdvInput.value = cleanText;
-            hdvInput.blur(); 
         }
     } catch (err) {
-        console.log("Không lấy được Clipboard:", err);
+        alert("Vui lòng cho phép quyền dán từ ứng dụng khác để dùng tính năng này!");
+        console.log("Lỗi đọc Clipboard:", err);
     }
-});
+};
 
 /* =========================================================
    🚌 TÍNH NĂNG 2: BẤM NÚT XE -> ĐỂ NGUYÊN CHỮ "đi cùng xe"
@@ -230,9 +242,7 @@ listXe.forEach(function(bienSo) {
     btnXe.innerText = bienSo;
     
     btnXe.onclick = function() {
-        // Ghi đè hoàn toàn ô HDV thành "đi cùng [số xe]", không lấy SĐT cũ nữa
         hdvInput.value = "đi cùng " + bienSo;
-        
         carScreen.classList.remove('active-screen');
         mainScreen.classList.add('active-screen');
     };
