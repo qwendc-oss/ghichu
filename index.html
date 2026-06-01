@@ -18,6 +18,7 @@
 --btn-hover: #5066ff;
 --text-main: #1c1c1e;
 --text-placeholder: #b3bcc7;
+--btn-orange: #ff9500;
 }
 * {
 box-sizing: border-box;
@@ -45,6 +46,11 @@ flex-direction: column;
 gap: 12px;
 margin-top: 10px;
 }
+.hdv-row {
+display: flex;
+gap: 10px;
+width: 100%;
+}
 input[type="text"] {
 width: 100%;
 background-color: var(--input-bg);
@@ -57,6 +63,17 @@ color: var(--text-main);
 }
 input[type="text"]::placeholder {
 color: var(--text-placeholder);
+}
+.btn-select-car {
+background-color: var(--btn-orange);
+color: white;
+border: none;
+border-radius: 12px;
+padding: 0 15px;
+font-size: 16px;
+font-weight: bold;
+cursor: pointer;
+white-space: nowrap;
 }
 .screen-section {
 display: none;
@@ -99,6 +116,7 @@ border: none;
 cursor: pointer;
 width: 100%;
 text-align: center;
+margin-bottom: 5px;
 }
 .btn-save {
 width: 100%;
@@ -119,8 +137,11 @@ margin-top: 10px;
 
 <div class="app-container">
 <div class="input-group">
-<input type="text" id="hdvInput" placeholder="HDV">
-<input type="text" id="chuyenDiInput" placeholder="Chuyến đi">
+    <div class="hdv-row">
+        <input type="text" id="hdvInput" placeholder="HDV (Chạm để dán số)">
+        <button type="button" id="carTriggerBtn" class="btn-select-car">🚌 Xe</button>
+    </div>
+    <input type="text" id="chuyenDiInput" placeholder="Chuyến đi">
 </div>
 
 <div id="mainScreen" class="screen-section active-screen">
@@ -143,6 +164,11 @@ margin-top: 10px;
 <div id="subGrid" class="grid-layout"></div>
 </div>
 
+<div id="carScreen" class="screen-section">
+<button id="backCarBtn" class="btn-back">← Quay lại</button>
+<div id="carGrid" class="grid-layout"></div>
+</div>
+
 <button id="saveBtn" class="btn-save">LƯU DỮ LIỆU</button>
 </div>
 
@@ -162,15 +188,71 @@ dian: ["đưa đón đi ăn", "nhà hàng - khách sạn", "khách sạn - nhà 
 taphin: ["đưa đón tả phìn", "đưa tả phìn 1 chiều", "đón tả phìn 1 chiều"]
 };
 
+const listXe = ["3314", "120", "3325", "2525", "021", "801", "270", "4869", "284", "5349", "2610"];
+
 document.addEventListener("DOMContentLoaded", function() {
 const mainScreen = document.getElementById('mainScreen');
 const subScreen = document.getElementById('subScreen');
+const carScreen = document.getElementById('carScreen');
 const subGrid = document.getElementById('subGrid');
+const carGrid = document.getElementById('carGrid');
 const hdvInput = document.getElementById('hdvInput');
 const chuyenDiInput = document.getElementById('chuyenDiInput');
 const backBtn = document.getElementById('backBtn');
+const backCarBtn = document.getElementById('backCarBtn');
+const carTriggerBtn = document.getElementById('carTriggerBtn');
 const saveBtn = document.getElementById('saveBtn');
 
+/* =========================================================
+   ⚡ TÍNH NĂNG 1: DÁN SĐT SIÊU TỐC KHI CHẠM VÀO Ô TEXT
+   ========================================================= */
+hdvInput.addEventListener('focus', async function() {
+    try {
+        const text = await navigator.clipboard.readText();
+        const cleanText = text.trim();
+        
+        if (cleanText.length > 0 && !isNaN(cleanText.replace(/\s/g, ''))) {
+            // Chỉ ghi nhận SĐT nguyên bản, không nối thêm gì cả
+            hdvInput.value = cleanText;
+            hdvInput.blur(); 
+        }
+    } catch (err) {
+        console.log("Không lấy được Clipboard:", err);
+    }
+});
+
+/* =========================================================
+   🚌 TÍNH NĂNG 2: BẤM NÚT XE -> ĐỂ NGUYÊN CHỮ "đi cùng xe"
+   ========================================================= */
+listXe.forEach(function(bienSo) {
+    const btnXe = document.createElement('button');
+    btnXe.className = 'btn-custom';
+    btnXe.innerText = bienSo;
+    
+    btnXe.onclick = function() {
+        // Ghi đè hoàn toàn ô HDV thành "đi cùng [số xe]", không lấy SĐT cũ nữa
+        hdvInput.value = "đi cùng " + bienSo;
+        
+        carScreen.classList.remove('active-screen');
+        mainScreen.classList.add('active-screen');
+    };
+    carGrid.appendChild(btnXe);
+});
+
+carTriggerBtn.onclick = function() {
+    mainScreen.classList.remove('active-screen');
+    subScreen.classList.remove('active-screen');
+    carScreen.classList.add('active-screen');
+};
+
+backCarBtn.onclick = function() {
+    carScreen.classList.remove('active-screen');
+    mainScreen.classList.add('active-screen');
+};
+
+/* =========================================================
+   XỬ LÝ MÀN HÌNH CHUYẾN ĐI (GIỮ NGUYÊN)
+   ========================================================= */
 const mainButtons = document.querySelectorAll('.btn-main-trigger');
 mainButtons.forEach(function(btnChinh) {
 btnChinh.onclick = function() {
@@ -205,7 +287,9 @@ subScreen.classList.remove('active-screen');
 mainScreen.classList.add('active-screen');
 };
 
-// 🌟 TỐI ƯU HÀM LƯU SIÊU TỐC - KHÔNG CHỜ ĐỢI 🌟
+/* =========================================================
+   LƯU DỮ LIỆU SIÊU TỐC (GIỮ NGUYÊN)
+   ========================================================= */
 saveBtn.onclick = function() {
 const hdvValue = hdvInput.value.trim();
 const chuyenDiValue = chuyenDiInput.value.trim();
@@ -215,7 +299,6 @@ alert("Vui lòng nhập tên HDV hoặc chọn Chuyến đi trước khi lưu!")
 return;
 }
 
-// 1. Gửi lệnh chạy ngầm đi ngay lập tức
 fetch(WEB_APP_URL, {
 method: "POST",
 mode: "no-cors",
@@ -223,7 +306,6 @@ headers: { "Content-Type": "application/json" },
 body: JSON.stringify({ hdv: hdvValue, chuyen_di: chuyenDiValue })
 }).catch(function(e) { console.log("Lỗi gửi ngầm:", e); });
 
-// 2. KHÔNG CHỜ ĐỢI - Phản hồi thành công trên màn hình luôn lập tức (dưới 0.1s)
 hdvInput.value = "";
 chuyenDiInput.value = "";
 
@@ -235,7 +317,7 @@ setTimeout(function() {
 saveBtn.innerText = "LƯU DỮ LIỆU";
 saveBtn.style.backgroundColor = "#6c7fff";
 saveBtn.disabled = false;
-}, 800); // 0.8 giây sau tự trả nút về bình thường để bấm tiếp chuyến khác
+}, 800);
 };
 });
 </script>
