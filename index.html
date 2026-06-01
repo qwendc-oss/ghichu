@@ -149,7 +149,6 @@ margin-top: 10px;
 <div class="app-container">
 <div class="input-group">
     <div class="hdv-row">
-        <!-- ĐÃ SỬA: Xóa bỏ thuộc tính readonly để bạn thoải mái gõ tay bằng bàn phím -->
         <input type="text" id="hdvInput" placeholder="HDV / SĐT">
         <button type="button" id="pasteBtn" class="btn-action-small btn-paste-fast">📋 Dán</button>
         <button type="button" id="carTriggerBtn" class="btn-action-small btn-select-car">🚌 Xe</button>
@@ -157,7 +156,6 @@ margin-top: 10px;
     <input type="text" id="chuyenDiInput" placeholder="Chuyến đi">
 </div>
 
-<!-- MÀN HÌNH CHÍNH -->
 <div id="mainScreen" class="screen-section active-screen">
 <div class="grid-layout">
 <button class="btn-custom btn-main-trigger" data-key="catcat">Cát Cát</button>
@@ -173,13 +171,11 @@ margin-top: 10px;
 </div>
 </div>
 
-<!-- MÀN HÌNH CHUYẾN ĐI -->
 <div id="subScreen" class="screen-section">
 <button id="backBtn" class="btn-back">← Quay lại chọn Biến Chính</button>
 <div id="subGrid" class="grid-layout"></div>
 </div>
 
-<!-- MÀN HÌNH CHỌN XE -->
 <div id="carScreen" class="screen-section">
 <button id="backCarBtn" class="btn-back">← Quay lại</button>
 <div id="carGrid" class="grid-layout"></div>
@@ -189,7 +185,8 @@ margin-top: 10px;
 </div>
 
 <script>
-const WEB_APP_URL = https://script.google.com/macros/s/AKfycbxwqcov_NzqRJJOPGP2is1hKKdBYv-PrdADABAjbxfK9ngxvJIyuTO80mWsra2_/exec
+// ⚠️ CHÚ Ý: BẠN HÃY THAY LINK DƯỚI ĐÂY BẰNG LINK MỚI COPY TRÊN GOOGLE SHEETS CỦA BẠN NHÉ!
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxwqcov_NzqRJJOPGP2is1hKKdBYv-PrdADABAjbxfK9ngxvJIyuTO80mWsra2_/exec;
 
 const subDataMap = {
 catcat: ["đưa đón catcat", "đưa catcat 1 chiều", "đón catcat 1 chiều"],
@@ -221,14 +218,14 @@ const backBtn = document.getElementById('backBtn');
 const backCarBtn = document.getElementById('backCarBtn');
 
 /* =========================================================
-   ⚡ ĐỌC TRỰC TIẾP CLIPBOARD: KHÔNG NHẢY APP, KHÔNG THÊM TAB
+   ⚡ ĐỌC TRỰC TIẾP CLIPBOARD: KHÔNG DÙNG PHÍM TẮT, KHÔNG NHẢY TAB
    ========================================================= */
 pasteBtn.onclick = async function(e) {
     e.preventDefault();
     try {
         const text = await navigator.clipboard.readText();
         if (text) {
-            // Tự động xóa bỏ toàn bộ khoảng trắng/dấu cách có trong SĐT khi dán siêu tốc
+            // Tự động xóa khoảng trắng khi dán siêu tốc
             hdvInput.value = text.replace(/\s+/g, '').trim();
         } else {
             alert("Bộ nhớ tạm của bạn đang trống!");
@@ -240,7 +237,7 @@ pasteBtn.onclick = async function(e) {
 };
 
 /* =========================================================
-   🚌 CHỌN XE ĐI CÙNG
+   🚌 CHỌN XE ĐI CÙNG (GIỮ NGUYÊN)
    ========================================================= */
 listXe.forEach(function(bienSo) {
     const btnXe = document.createElement('button');
@@ -267,7 +264,7 @@ backCarBtn.onclick = function() {
 };
 
 /* =========================================================
-   XỬ LÝ MÀN HÌNH CHUYẾN ĐI
+   XỬ LÝ MÀN HÌNH CHUYẾN ĐI (GIỮ NGUYÊN)
    ========================================================= */
 const mainButtons = document.querySelectorAll('.btn-main-trigger');
 mainButtons.forEach(function(btnChinh) {
