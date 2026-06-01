@@ -19,7 +19,7 @@
 --text-main: #1c1c1e;
 --text-placeholder: #b3bcc7;
 --btn-orange: #ff9500;
---btn-green: #34c759; /* Màu xanh lá cho nút dán */
+--btn-green: #34c759; /* Màu xanh lá nổi bật cho nút dán nhanh */
 }
 * {
 box-sizing: border-box;
@@ -47,14 +47,14 @@ flex-direction: column;
 gap: 12px;
 margin-top: 10px;
 }
-/* Thiết kế lại hàng HDV để chứa 3 phần: Ô nhập, Nút dán, Nút xe */
+/* Thiết kế hàng ngang chứa ô HDV và 2 nút chức năng */
 .hdv-row {
 display: flex;
 gap: 8px;
 width: 100%;
 }
 input[type="text"] {
-flex: 1; /* Chiếm phần lớn không gian */
+flex: 1;
 min-width: 0;
 background-color: var(--input-bg);
 border: none;
@@ -67,17 +67,20 @@ color: var(--text-main);
 input[type="text"]::placeholder {
 color: var(--text-placeholder);
 }
-/* Style chung cho các nút chức năng nhỏ cạnh ô nhập */
+/* Style nút chức năng nhỏ gọn bên cạnh ô HDV */
 .btn-action-small {
 color: white;
 border: none;
 border-radius: 12px;
-padding: 0 12px;
-font-size: 15px;
+padding: 0 14px;
+font-size: 16px;
 font-weight: bold;
 cursor: pointer;
 white-space: nowrap;
 box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+.btn-action-small:active {
+transform: scale(0.95);
 }
 .btn-paste-fast {
 background-color: var(--btn-green);
@@ -112,33 +115,20 @@ line-height: 1.3;
 box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 .btn-custom:active {
-/* =========================================================
-   ⚡ TÍNH NĂNG 1: BẤM NÚT "📋 DÁN" ĐÃ SỬA LỖI KHÔNG HIỆN QUYỀN TRÊN IPHONE
-   ========================================================= */
-pasteBtn.onclick = async function() {
-    try {
-        // Mẹo ép iOS kích hoạt bảng hỏi quyền dán: 
-        // Tạo một lệnh đọc bộ nhớ tạm trực tiếp ngay trong sự kiện click của người dùng
-        const text = await navigator.clipboard.readText();
-        const cleanText = text.trim();
-        
-        if (cleanText.length > 0) {
-            hdvInput.value = cleanText;
-        } else {
-            alert("Bộ nhớ tạm của bạn đang trống. Hãy đi copy SĐT trước nhé!");
-        }
-    } catch (err) {
-        // Nếu iPhone chặn, ta dùng cách dự phòng 2: Gọi lệnh execCommand truyền thống của iOS
-        hdvInput.focus();
-        hdvInput.select();
-        const thanhCong = document.execCommand('paste');
-        
-        if (!thanhCong) {
-            alert("Vui lòng thử lại: 1. Hãy copy sẵn SĐT ngoài cuộc gọi/SMS. 2. Vào lại app bấm nút Dán nhé!");
-        }
-        console.log("Lỗi Clipboard API, chuyển hướng execCommand:", err);
-    }
-};
+transform: scale(0.96);
+background-color: var(--btn-hover);
+}
+.btn-back {
+background-color: #e5e5ea;
+color: #3a3a3c;
+padding: 14px;
+font-size: 15px;
+font-weight: bold;
+border-radius: 10px;
+border: none;
+cursor: pointer;
+width: 100%;
+text-align: center;
 margin-bottom: 5px;
 }
 .btn-save {
@@ -161,13 +151,17 @@ margin-top: 10px;
 <div class="app-container">
 <div class="input-group">
     <div class="hdv-row">
+        <!-- Ô nhập text tự do -->
         <input type="text" id="hdvInput" placeholder="HDV / SĐT">
+        <!-- Nút Dán: Hành động chạm trực tiếp của người dùng giúp mở bảng xin quyền iOS -->
         <button type="button" id="pasteBtn" class="btn-action-small btn-paste-fast">📋 Dán</button>
+        <!-- Nút mở màn hình chọn Xe -->
         <button type="button" id="carTriggerBtn" class="btn-action-small btn-select-car">🚌 Xe</button>
     </div>
     <input type="text" id="chuyenDiInput" placeholder="Chuyến đi">
 </div>
 
+<!-- MÀN HÌNH CHÍNH: CHỌN BIẾN CHÍNH -->
 <div id="mainScreen" class="screen-section active-screen">
 <div class="grid-layout">
 <button class="btn-custom btn-main-trigger" data-key="catcat">Cát Cát</button>
@@ -183,11 +177,13 @@ margin-top: 10px;
 </div>
 </div>
 
+<!-- MÀN HÌNH PHỤ 1: CHỌN CHI TIẾT CHUYẾN ĐI -->
 <div id="subScreen" class="screen-section">
 <button id="backBtn" class="btn-back">← Quay lại chọn Biến Chính</button>
 <div id="subGrid" class="grid-layout"></div>
 </div>
 
+<!-- MÀN HÌNH PHỤ 2: CHỌN XE ĐI CÙNG -->
 <div id="carScreen" class="screen-section">
 <button id="backCarBtn" class="btn-back">← Quay lại</button>
 <div id="carGrid" class="grid-layout"></div>
@@ -212,6 +208,7 @@ dian: ["đưa đón đi ăn", "nhà hàng - khách sạn", "khách sạn - nhà 
 taphin: ["đưa đón tả phìn", "đưa tả phìn 1 chiều", "đón tả phìn 1 chiều"]
 };
 
+// Danh sách xe công ty yêu cầu
 const listXe = ["3314", "120", "3325", "2525", "021", "801", "270", "4869", "284", "5349", "2610"];
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -229,25 +226,28 @@ const pasteBtn = document.getElementById('pasteBtn');
 const saveBtn = document.getElementById('saveBtn');
 
 /* =========================================================
-   ⚡ TÍNH NĂNG 1: BẤM NÚT "📋 DÁN" -> DÁN NGAY LẬP TỨC (1 CHẠM)
+   ⚡ TÍNH NĂNG 1: BẤM NÚT "📋 DÁN" ĐỂ LẤY NGAY SĐT (1 CHẠM CHUẨN IOS)
    ========================================================= */
 pasteBtn.onclick = async function() {
     try {
-        // Đọc văn bản từ bộ nhớ tạm khi người dùng bấm nút chủ động
+        // Gọi lệnh đọc clipboard trực tiếp trong sự kiện click của thẻ button
         const text = await navigator.clipboard.readText();
         const cleanText = text.trim();
         
         if (cleanText.length > 0) {
             hdvInput.value = cleanText;
+        } else {
+            alert("Bộ nhớ tạm hiện đang trống. Bạn hãy copy SĐT trước khi bấm nút dán nhé!");
         }
     } catch (err) {
-        alert("Vui lòng cho phép quyền dán từ ứng dụng khác để dùng tính năng này!");
-        console.log("Lỗi đọc Clipboard:", err);
+        // Trường hợp trình duyệt cũ không hỗ trợ Clipboard API hoặc lỗi không xác định
+        alert("Không thể đọc bộ nhớ tạm. Hãy chắc chắn bạn đã COPY số điện thoại ngoài cuộc gọi/SMS và cho phép quyền khi iPhone hỏi nhé!");
+        console.log("Lỗi hệ thống đọc Clipboard:", err);
     }
 };
 
 /* =========================================================
-   🚌 TÍNH NĂNG 2: BẤM NÚT XE -> ĐỂ NGUYÊN CHỮ "đi cùng xe"
+   🚌 TÍNH NĂNG 2: MÀN HÌNH CHỌN XE ĐI CÙNG (GHI ĐÈ CHỮ "đi cùng xe")
    ========================================================= */
 listXe.forEach(function(bienSo) {
     const btnXe = document.createElement('button');
@@ -255,26 +255,31 @@ listXe.forEach(function(bienSo) {
     btnXe.innerText = bienSo;
     
     btnXe.onclick = function() {
+        // Ghi đè hoàn toàn ô HDV thành chữ "đi cùng [số xe]", không giữ lại SĐT cũ
         hdvInput.value = "đi cùng " + bienSo;
+        
+        // Quay về màn hình chính sau khi chọn xong xe
         carScreen.classList.remove('active-screen');
         mainScreen.classList.add('active-screen');
     };
     carGrid.appendChild(btnXe);
 });
 
+// Chuyển sang màn hình chọn xe khi bấm nút Xe màu cam
 carTriggerBtn.onclick = function() {
     mainScreen.classList.remove('active-screen');
     subScreen.classList.remove('active-screen');
     carScreen.classList.add('active-screen');
 };
 
+// Nút quay lại từ màn hình xe
 backCarBtn.onclick = function() {
     carScreen.classList.remove('active-screen');
     mainScreen.classList.add('active-screen');
 };
 
 /* =========================================================
-   XỬ LÝ MÀN HÌNH CHUYẾN ĐI (GIỮ NGUYÊN)
+   XỬ LÝ MÀN HÌNH CHUYẾN ĐI (CODE GỐC GIỮ NGUYÊN)
    ========================================================= */
 const mainButtons = document.querySelectorAll('.btn-main-trigger');
 mainButtons.forEach(function(btnChinh) {
@@ -311,7 +316,7 @@ mainScreen.classList.add('active-screen');
 };
 
 /* =========================================================
-   LƯU DỮ LIỆU SIÊU TỐC (GIỮ NGUYÊN)
+   LƯU DỮ LIỆU SIÊU TỐC (CODE GỐC GIỮ NGUYÊN)
    ========================================================= */
 saveBtn.onclick = function() {
 const hdvValue = hdvInput.value.trim();
