@@ -112,20 +112,33 @@ line-height: 1.3;
 box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 .btn-custom:active {
-transform: scale(0.96);
-background-color: var(--btn-hover);
-}
-.btn-back {
-background-color: #e5e5ea;
-color: #3a3a3c;
-padding: 14px;
-font-size: 15px;
-font-weight: bold;
-border-radius: 10px;
-border: none;
-cursor: pointer;
-width: 100%;
-text-align: center;
+/* =========================================================
+   ⚡ TÍNH NĂNG 1: BẤM NÚT "📋 DÁN" ĐÃ SỬA LỖI KHÔNG HIỆN QUYỀN TRÊN IPHONE
+   ========================================================= */
+pasteBtn.onclick = async function() {
+    try {
+        // Mẹo ép iOS kích hoạt bảng hỏi quyền dán: 
+        // Tạo một lệnh đọc bộ nhớ tạm trực tiếp ngay trong sự kiện click của người dùng
+        const text = await navigator.clipboard.readText();
+        const cleanText = text.trim();
+        
+        if (cleanText.length > 0) {
+            hdvInput.value = cleanText;
+        } else {
+            alert("Bộ nhớ tạm của bạn đang trống. Hãy đi copy SĐT trước nhé!");
+        }
+    } catch (err) {
+        // Nếu iPhone chặn, ta dùng cách dự phòng 2: Gọi lệnh execCommand truyền thống của iOS
+        hdvInput.focus();
+        hdvInput.select();
+        const thanhCong = document.execCommand('paste');
+        
+        if (!thanhCong) {
+            alert("Vui lòng thử lại: 1. Hãy copy sẵn SĐT ngoài cuộc gọi/SMS. 2. Vào lại app bấm nút Dán nhé!");
+        }
+        console.log("Lỗi Clipboard API, chuyển hướng execCommand:", err);
+    }
+};
 margin-bottom: 5px;
 }
 .btn-save {
