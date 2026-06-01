@@ -52,13 +52,18 @@ display: flex;
 gap: 8px;
 width: 100%;
 }
-input[type="text"] {
+.input-wrapper {
+position: relative;
 flex: 1;
-min-width: 0;
+display: flex;
+align-items: center;
+}
+input[type="text"] {
+width: 100%;
 background-color: var(--input-bg);
 border: none;
 border-radius: 12px;
-padding: 18px 15px;
+padding: 18px 40px 18px 15px; /* Chừa khoảng trống cho nút xóa */
 font-size: 18px;
 font-weight: bold;
 color: var(--text-main);
@@ -66,11 +71,28 @@ color: var(--text-main);
 input[type="text"]::placeholder {
 color: var(--text-placeholder);
 }
+/* Nút xóa nhanh kí tự */
+.clear-btn {
+position: absolute;
+right: 12px;
+background-color: #ceced2;
+color: white;
+border: none;
+border-radius: 50%;
+width: 22px;
+height: 22px;
+font-size: 12px;
+font-weight: bold;
+cursor: pointer;
+display: none;
+align-items: center;
+justify-content: center;
+}
 .btn-action-small {
 color: white;
 border: none;
 border-radius: 12px;
-padding: 0 14px;
+padding: 0 16px;
 font-size: 16px;
 font-weight: bold;
 cursor: pointer;
@@ -79,9 +101,6 @@ box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 .btn-action-small:active {
 transform: scale(0.95);
-}
-.btn-paste-fast {
-background-color: var(--btn-green);
 }
 .btn-select-car {
 background-color: var(--btn-orange);
@@ -149,11 +168,16 @@ margin-top: 10px;
 <div class="app-container">
 <div class="input-group">
     <div class="hdv-row">
-        <input type="text" id="hdvInput" placeholder="HDV / SĐT">
-        <button type="button" id="pasteBtn" class="btn-action-small btn-paste-fast">📋 Dán</button>
+        <div class="input-wrapper">
+            <input type="text" id="hdvInput" placeholder="HDV / SĐT" inputmode="text">
+            <button type="button" id="clearHdv" class="clear-btn">✕</button>
+        </div>
         <button type="button" id="carTriggerBtn" class="btn-action-small btn-select-car">🚌 Xe</button>
     </div>
-    <input type="text" id="chuyenDiInput" placeholder="Chuyến đi">
+    <div class="input-wrapper">
+        <input type="text" id="chuyenDiInput" placeholder="Chuyến đi" readonly>
+        <button type="button" id="clearChuyenDi" class="clear-btn">✕</button>
+    </div>
 </div>
 
 <div id="mainScreen" class="screen-section active-screen">
@@ -185,7 +209,6 @@ margin-top: 10px;
 </div>
 
 <script>
-// 🌟 ĐÃ SỬA: Link chuẩn, liền mạch không dấu cách rác
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxwqcov_NzqRJJOPGP2is1hKKdBYv-PrdADABAjbxfK9ngxvJIyuTO80mWsra2_/exec";
 
 const subDataMap = {
@@ -212,27 +235,42 @@ const carGrid = document.getElementById('carGrid');
 const hdvInput = document.getElementById('hdvInput');
 const chuyenDiInput = document.getElementById('chuyenDiInput');
 const carTriggerBtn = document.getElementById('carTriggerBtn');
-const pasteBtn = document.getElementById('pasteBtn');
 const saveBtn = document.getElementById('saveBtn');
 const backBtn = document.getElementById('backBtn');
 const backCarBtn = document.getElementById('backCarBtn');
+const clearHdv = document.getElementById('clearHdv');
+const clearChuyenDi = document.getElementById('clearChuyenDi');
 
 /* =========================================================
-   ⚡ ĐỌC TRỰC TIẾP CLIPBOARD: AN TOÀN TUYỆT ĐỐI
+   ⚡ TỰ ĐỘNG XÓA KHOẢNG TRẮNG VÀ QUẢN LÝ NÚT XÓA NHANH
    ========================================================= */
-pasteBtn.onclick = async function(e) {
-    e.preventDefault();
-    try {
-        const text = await navigator.clipboard.readText();
-        if (text) {
-            hdvInput.value = text.replace(/\s+/g, '').trim();
-        } else {
-            alert("Bộ nhớ tạm của bạn đang trống!");
-        }
-    } catch (err) {
-        alert("Vui lòng cho phép ứng dụng truy cập Bộ nhớ tạm khi được hỏi.");
-        console.error("Lỗi clipboard: ", err);
+function handleInputChange(inputEl, clearBtnEl) {
+    if (inputEl.value.length > 0) {
+        clearBtnEl.style.display = 'flex';
+    } else {
+        clearBtnEl.style.display = 'none';
     }
+}
+
+hdvInput.oninput = function() {
+    // Tự động quét sạch dấu cách khi bạn gõ hoặc dán từ bàn phím
+    hdvInput.value = hdvInput.value.replace(/\s+/g, '');
+    handleInputChange(hdvInput, clearHdv);
+};
+
+chuyenDiInput.onchange = function() {
+    handleInputChange(chuyenDiInput, clearChuyenDi);
+};
+
+clearHdv.onclick = function() {
+    hdvInput.value = "";
+    clearHdv.style.display = 'none';
+    hdvInput.focus();
+};
+
+clearChuyenDi.onclick = function() {
+    chuyenDiInput.value = "";
+    clearChuyenDi.style.display = 'none';
 };
 
 /* =========================================================
@@ -245,6 +283,7 @@ listXe.forEach(function(bienSo) {
     
     btnXe.onclick = function() {
         hdvInput.value = "đi cùng " + bienSo;
+        handleInputChange(hdvInput, clearHdv);
         carScreen.classList.remove('active-screen');
         mainScreen.classList.add('active-screen');
     };
@@ -281,6 +320,7 @@ btnPhu.innerText = text;
 
 btnPhu.onclick = function() {
 chuyenDiInput.value = text;
+handleInputChange(chuyenDiInput, clearChuyenDi);
 subScreen.classList.remove('active-screen');
 mainScreen.classList.add('active-screen');
 };
@@ -320,6 +360,8 @@ body: JSON.stringify({ hdv: hdvValue, chuyen_di: chuyenDiValue })
 
 hdvInput.value = "";
 chuyenDiInput.value = "";
+clearHdv.style.display = 'none';
+clearChuyenDi.style.display = 'none';
 
 saveBtn.innerText = "LƯU DỮ LIỆU THÀNH CÔNG!";
 saveBtn.style.backgroundColor = "#34c759";
