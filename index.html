@@ -58,7 +58,7 @@ flex: 1;
 display: flex;
 align-items: center;
 }
-input[type="text"], input[type="tel"] {
+input[type="text"] {
 width: 100%;
 background-color: var(--input-bg);
 border: none;
@@ -68,7 +68,7 @@ font-size: 18px;
 font-weight: bold;
 color: var(--text-main);
 }
-input[type="text"]::placeholder, input[type="tel"]::placeholder {
+input[type="text"]::placeholder {
 color: var(--text-placeholder);
 }
 .clear-btn {
@@ -141,6 +141,7 @@ padding: 14px;
 font-size: 15px;
 font-weight: bold;
 border-radius: 10px;
+border-radius: 10px;
 border: none;
 cursor: pointer;
 width: 100%;
@@ -168,8 +169,8 @@ margin-top: 10px;
 <div class="input-group">
     <div class="hdv-row">
         <div class="input-wrapper">
-            <!-- ⚡ ÉP BUỘC HIỂN THỊ NÚT DÁN BẰNG KIỂU TEL VÀ AUTOCOMPLETE -->
-            <input type="tel" id="hdvInput" placeholder="HDV / SĐT" autocomplete="one-time-code" enterkeyhint="done">
+            <!-- ⚡ SỬ DỤNG TYPE TEXT KÈM THUỘC TÍNH ĐỂ HIỆN BONG BÓNG "DÁN" NHANH -->
+            <input type="text" id="hdvInput" placeholder="HDV / SĐT" autofocus data-contextmenu="true">
             <button type="button" id="clearHdv" class="clear-btn">✕</button>
         </div>
         <button type="button" id="carTriggerBtn" class="btn-action-small btn-select-car">🚌 Xe</button>
@@ -253,7 +254,6 @@ function handleInputChange(inputEl, clearBtnEl) {
 }
 
 hdvInput.oninput = function() {
-    // Tự động xóa khoảng trắng
     hdvInput.value = hdvInput.value.replace(/\s+/g, '');
     handleInputChange(hdvInput, clearHdv);
 };
