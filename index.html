@@ -150,7 +150,6 @@ margin-top: 10px;
 <div class="input-group">
     <div class="hdv-row">
         <input type="text" id="hdvInput" placeholder="HDV / SĐT" readonly>
-        <!-- Nút dán gọi Phím Tắt Hệ Thống 1 chạm -->
         <button type="button" id="pasteBtn" class="btn-action-small btn-paste-fast">📋 Dán</button>
         <button type="button" id="carTriggerBtn" class="btn-action-small btn-select-car">🚌 Xe</button>
     </div>
@@ -221,23 +220,26 @@ const pasteBtn = document.getElementById('pasteBtn');
 const saveBtn = document.getElementById('saveBtn');
 
 /* =========================================================
-   ⚡ TỰ ĐỘNG BÓC TÁCH DỮ LIỆU TỪ LINK DO PHÍM TẮT TRUYỀN SANG
+   ⚡ TỰ ĐỘNG XỬ LÝ SĐT (XÓA KHOẢNG TRẮNG, GIỮ NGUYÊN TAB)
    ========================================================= */
 const urlParams = new URLSearchParams(window.location.search);
 const sdtParam = urlParams.get('sdt');
 if (sdtParam) {
-    hdvInput.value = sdtParam.trim();
-    // Xóa tham số sdt trên thanh địa chỉ để giữ giao diện sạch sẽ
+    // Giải mã ký tự đặc biệt thu về chuỗi gốc và xử lý khoảng trắng
+    let cleanSdt = decodeURIComponent(sdtParam).trim();
+    hdvInput.value = cleanSdt;
+    
+    // Xóa param trên url mà không làm mất trạng thái hay tải lại trang
     window.history.replaceState({}, document.title, window.location.pathname);
 }
 
 /* =========================================================
-   ⚡ 1 CHẠM DUY NHẤT: GỌI PHÍM TẮT ĐỂ TỰ ĐỘNG HÚT SĐT VÀO APP
+   ⚡ GỌI SỬ DỤNG PHÍM TẮT KHÔNG ĐỔI MÀN HÌNH SAFARI
    ========================================================= */
 pasteBtn.onclick = function(e) {
     e.preventDefault();
-    // Sử dụng _self để mở mượt và tránh lỗi hiển thị xác nhận của iOS
-    window.open("shortcuts://run-shortcut?name=DanSapa", "_self");
+    // Ép mở trực tiếp trên chính tab hiện hành thay vì mở cửa sổ mới
+    window.location.href = "shortcuts://run-shortcut?name=DanSapa";
 };
 
 /* =========================================================
