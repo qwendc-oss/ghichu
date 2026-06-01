@@ -185,7 +185,7 @@ margin-top: 10px;
 </div>
 
 <script>
-// 🚀 ĐÃ CẬP NHẬT: Đường link Web App Google mới chính xác của bạn ở đây
+// 🌟 ĐÃ SỬA: Link chuẩn, liền mạch không dấu cách rác
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxwqcov_NzqRJJOPGP2is1hKKdBYv-PrdADABAjbxfK9ngxvJIyuTO80mWsra2_/exec";
 
 const subDataMap = {
@@ -218,14 +218,13 @@ const backBtn = document.getElementById('backBtn');
 const backCarBtn = document.getElementById('backCarBtn');
 
 /* =========================================================
-   ⚡ ĐỌC TRỰC TIẾP CLIPBOARD: KHÔNG DÙNG PHÍM TẮT, KHÔNG NHẢY TAB
+   ⚡ ĐỌC TRỰC TIẾP CLIPBOARD: AN TOÀN TUYỆT ĐỐI
    ========================================================= */
 pasteBtn.onclick = async function(e) {
     e.preventDefault();
     try {
         const text = await navigator.clipboard.readText();
         if (text) {
-            // Tự động xóa khoảng trắng khi dán siêu tốc
             hdvInput.value = text.replace(/\s+/g, '').trim();
         } else {
             alert("Bộ nhớ tạm của bạn đang trống!");
@@ -237,7 +236,7 @@ pasteBtn.onclick = async function(e) {
 };
 
 /* =========================================================
-   🚌 CHỌN XE ĐI CÙNG (GIỮ NGUYÊN)
+   🚌 CHỌN XE ĐI CÙNG
    ========================================================= */
 listXe.forEach(function(bienSo) {
     const btnXe = document.createElement('button');
@@ -264,7 +263,7 @@ backCarBtn.onclick = function() {
 };
 
 /* =========================================================
-   XỬ LÝ MÀN HÌNH CHUYẾN ĐI (GIỮ NGUYÊN)
+   XỬ LÝ MÀN HÌNH CHUYẾN ĐI
    ========================================================= */
 const mainButtons = document.querySelectorAll('.btn-main-trigger');
 mainButtons.forEach(function(btnChinh) {
@@ -312,7 +311,6 @@ alert("Vui lòng nhập tên HDV hoặc chọn Chuyến đi trước khi lưu!")
 return;
 }
 
-// Gửi ngầm dữ liệu lên Google Sheets
 fetch(WEB_APP_URL, {
 method: "POST",
 mode: "no-cors",
