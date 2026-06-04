@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="App Sapa">
-<link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/854/854878.png">
+<link class="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/854/854878.png">
 
 <title>Quan Ly Chuyen Di Sapa</title>
 <style>
@@ -185,9 +185,9 @@ margin-top: 10px;
 </div>
 
 <script>
-// 🌟 ĐÃ SỬA: Link chuẩn, liền mạch không dấu cách rác
 const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxwqcov_NzqRJJOPGP2is1hKKdBYv-PrdADABAjbxfK9ngxvJIyuTO80mWsra2_/exec";
 
+// 🌟 ĐÃ CẬP NHẬT THEO YÊU CẦU CỦA BẠN
 const subDataMap = {
 catcat: ["đưa đón catcat", "đưa catcat 1 chiều", "đón catcat 1 chiều"],
 moana: ["đưa đón moana", "đưa moana 1 chiều", "đón moana 1 chiều"],
@@ -196,8 +196,8 @@ caukinh: ["đưa đón cầu kính", "đưa cầu kính 1 chiều", "đón cầu
 banmong: ["đưa đón bản mòng", "đưa bản mòng 1 chiều", "đón bản mòng 1 chiều"],
 tavan: ["đưa đón tả van", "đưa tả van 1 chiều", "đón tả van 1 chiều"],
 galaocai: ["đón ga", "đón ga+cửa khẩu", "tiễn ga"],
-trungchuyen: ["bãi xe - khách sạn", "khách sạn - bãi xe", "bãi xe - nhà hàng", "nhà hàng - bãi xe", "bãi xe - sun", "sun - bãi xe"],
-dian: ["đưa đón đi ăn", "nhà hàng - khách sạn", "khách sạn - nhà hàng"],
+trungchuyen: ["bãi xe - khách sạn", "khách sạn - bãi xe", "bãi xe - sun", "sun - bãi xe", "khách sạn - sun", "sun - khách sạn"],
+dian: ["đưa đón đi ăn", "nhà hàng - khách sạn", "khách sạn - nhà hàng", "nhà hàng - bãi xe", "bãi xe - nhà hàng"],
 taphin: ["đưa đón tả phìn", "đưa tả phìn 1 chiều", "đón tả phìn 1 chiều"]
 };
 
@@ -218,7 +218,7 @@ const backBtn = document.getElementById('backBtn');
 const backCarBtn = document.getElementById('backCarBtn');
 
 /* =========================================================
-   ⚡ ĐỌC TRỰC TIẾP CLIPBOARD: AN TOÀN TUYỆT ĐỐI
+    ⚡ ĐỌC TRỰC TIẾP CLIPBOARD
    ========================================================= */
 pasteBtn.onclick = async function(e) {
     e.preventDefault();
@@ -236,7 +236,7 @@ pasteBtn.onclick = async function(e) {
 };
 
 /* =========================================================
-   🚌 CHỌN XE ĐI CÙNG
+    🚌 CHỌN XE ĐI CÙNG
    ========================================================= */
 listXe.forEach(function(bienSo) {
     const btnXe = document.createElement('button');
@@ -263,7 +263,7 @@ backCarBtn.onclick = function() {
 };
 
 /* =========================================================
-   XỬ LÝ MÀN HÌNH CHUYẾN ĐI
+    XỬ LÝ MÀN HÌNH CHUYẾN ĐI
    ========================================================= */
 const mainButtons = document.querySelectorAll('.btn-main-trigger');
 mainButtons.forEach(function(btnChinh) {
@@ -300,7 +300,7 @@ mainScreen.classList.add('active-screen');
 };
 
 /* =========================================================
-   LƯU DỮ LIỆU SIÊU TỐC
+    LƯU DỮ LIỆU SIÊU TỐC
    ========================================================= */
 saveBtn.onclick = function() {
 const hdvValue = hdvInput.value.trim();
